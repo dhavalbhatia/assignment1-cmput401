@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  api:
+    build:
+      context: ../
+      dockerfile: ./dev_env/Dockerfile
+    working_dir: /api
+    command: >
+      bash -c "python -m part_app.entrypoint
+      && uvicorn part_app.main:app --reload --host 0.0.0.0"
+    volumes:
+      - ../:/api/
+    # environment:
+    # DEBUG: 1
+    ports:
+      - 8080:8000
+  db:
+    image: postgres:13-alpine
+    container_name: db_part
+    environment:
+      - POSTGRES_USER=db_user
+      - POSTGRES_PASSWORD=test_db
+      - POSTGRES_DB=docker-compose
+    ports:
+      - '5432:5432'
+    volumes:
+      - ../postgres-data:/var/lib/postgresql/data
